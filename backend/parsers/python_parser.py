@@ -68,23 +68,28 @@ def parse_python(content: str) -> ParseResult:
     symbols: list[ParsedSymbol] = []
     imports: list[ParsedImport] = []
 
-    def visit_scope(nodes: list[ast.stmt], parent: str = "") -> None:
-        for node in nodes:
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                qualified = f"{parent}.{node.name}" if parent else node.name
-                symbols.append(_symbol(node, content, node.name, qualified, "function" if not parent else "method"))
-                visit_scope(node.body, qualified)
-            elif isinstance(node, ast.ClassDef):
-                qualified = f"{parent}.{node.name}" if parent else node.name
-                symbols.append(_symbol(node, content, node.name, qualified, "class"))
-                visit_scope(node.body, qualified)
-            elif isinstance(node, ast.Import):
-                for alias in node.names:
-                    imports.append(ParsedImport(alias.name, 0, [], node.lineno, f"import {alias.name}"))
-            elif isinstance(node, ast.ImportFrom):
-                names = [alias.name for alias in node.names]
-                module_text = "." * node.level + (node.module or "")
-                imports.append(ParsedImport(node.module, node.level, names, node.lineno, f"from {module_text} import {', '.join(names)}"))
+    def visit_node(node: ast.AST, parent: str = "") -> None:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            qualified = f"{parent}.{node.name}" if parent else node.name
+            symbols.append(_symbol(node, content, node.name, qualified, "function" if not parent else "method"))
+            for child in node.body:
+                visit_node(child, qualified)
+        elif isinstance(node, ast.ClassDef):
+            qualified = f"{parent}.{node.name}" if parent else node.name
+            symbols.append(_symbol(node, content, node.name, qualified, "class"))
+            for child in node.body:
+                visit_node(child, qualified)
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                imports.append(ParsedImport(alias.name, 0, [], node.lineno, f"import {alias.name}"))
+        elif isinstance(node, ast.ImportFrom):
+            names = [alias.name for alias in node.names]
+            module_text = "." * node.level + (node.module or "")
+            imports.append(ParsedImport(node.module, node.level, names, node.lineno, f"from {module_text} import {', '.join(names)}"))
+        else:
+            for child in ast.iter_child_nodes(node):
+                visit_node(child, parent)
 
-    visit_scope(tree.body)
+    for node in tree.body:
+        visit_node(node)
     return ParseResult(symbols, imports)

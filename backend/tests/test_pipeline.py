@@ -51,6 +51,25 @@ def test_python_ast_extracts_definitions_and_imports():
     assert not result.syntax_error
 
 
+def test_python_ast_extracts_imports_inside_control_flow():
+    source = """import root
+if TYPE_CHECKING:
+    from .types import Thing
+try:
+    import optional_dep
+except ImportError:
+    from fallback import Thing
+def load():
+    if enabled:
+        from .platform_impl import implementation
+"""
+    result = parse_python(source)
+    assert [(item.module, item.level) for item in result.imports] == [
+        ("root", 0), ("types", 1), ("optional_dep", 0), ("fallback", 0), ("platform_impl", 1)
+    ]
+    assert [item.name for item in result.symbols] == ["load"]
+
+
 def test_malformed_python_is_reported_without_raising():
     result = parse_python("def broken(:\n  pass\n")
     assert result.symbols == []

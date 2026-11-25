@@ -6,13 +6,13 @@ CodeAtlas turns a Python repository into a navigable map of files, symbols, and 
 
 - Import ZIP archives or public GitHub repository URLs.
 - Scan repository files while skipping common generated paths and respecting `.gitignore` patterns.
-- Parse Python source with the Python AST to extract classes, functions, methods, imports, line counts, and syntax errors.
+- Parse Python source with the Python AST to extract classes, functions, methods, imports (including conditional imports), line counts, and syntax errors.
 - Resolve in-repository import relationships and use NetworkX for graph statistics, strongly connected components, and dependency impact.
 - Browse source with line numbers, inspect symbols, search symbols and paths, and explore a Cytoscape dependency map.
 - Read basic Git branch, commit, history, and worktree status when Git metadata is available.
 - Export bounded analysis metadata as JSON without including source file bodies or extracted source snippets.
 
-Python is the only language with semantic parsing in this release. Other file types are identified and counted, but are not represented as fully parsed symbols. Function-call edges are not claimed unless resolution is reliable; unresolved imports remain visibly unresolved. Source is processed in this app's configured workspace and is not sent to an external analysis service. A hosted deployment receives the ZIP/repository source on its server; self-host CodeAtlas for private source you do not want transferred to a hosted server. Importing a public GitHub URL necessarily fetches that public repository from GitHub.
+Python is the only language with semantic parsing in this release. Other file types are identified and counted, but are not represented as fully parsed symbols. Search matches paths and symbol names, not arbitrary source text. Function-call edges are not claimed unless resolution is reliable; unresolved imports remain visibly unresolved. Source is processed in this app's configured workspace and is not sent to an external analysis service. A hosted deployment receives the ZIP/repository source on its server; self-host CodeAtlas for private source you do not want transferred to a hosted server. Importing a public GitHub URL necessarily fetches that public repository from GitHub.
 
 ## Requirements
 
