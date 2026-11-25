@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible problem in CodeAtlas.
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the actual behavior and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal safe fixture or sample where possible. Do not upload secrets.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: CodeAtlas version / commit
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Remove secrets and private repository content before sharing.
