@@ -36,7 +36,7 @@ In one terminal, start the API:
 uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-In another terminal, start the web app:
+In another terminal, start the web app: 
 
 ```bash
 pnpm dev
